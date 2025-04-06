@@ -1,4 +1,4 @@
-cat << 'EOF' > README.md
+
 # Azure Functions PDF Processor for RAG System
 
 This repository contains an Azure Function that processes PDF documents for use in a Retrieval-Augmented Generation (RAG) system. The function splits PDFs into pages, extracts text, and prepares the content for indexing in Azure AI Search.
@@ -33,27 +33,27 @@ This custom skill seamlessly integrates with Azure AI Search to enable page-base
 
 Clone this repository:
 
-\`\`\`bash
+```bash
 git clone https://github.com/yourusername/azure-functions-pdf-processor.git
 cd azure-functions-pdf-processor
-\`\`\`
+```
 
 Install dependencies:
 
-\`\`\`bash
+```bash
 pip install -r requirements.txt
-\`\`\`
+```
 
 Set up local settings:
 
-\`\`\`bash
+```bash
 cp local.settings.json.example local.settings.json
 # Edit local.settings.json with your settings
-\`\`\`
+```
 
 ## Project Structure
 
-\`\`\`
+```
 ├── .funcignore            # Files to exclude when deploying
 ├── .gitignore             # Git ignore file
 ├── Dockerfile             # For containerized deployment
@@ -63,23 +63,23 @@ cp local.settings.json.example local.settings.json
 └── split_pdf/             # PDF splitting function
     ├── __init__.py        # Main function code
     └── function.json      # Function configuration
-\`\`\`
+```
 
 ## Deployment
 
 ### Deploy to Azure Functions
 
-\`\`\`bash
+```bash
 az login
 func azure functionapp publish your-function-app-name
-\`\`\`
+```
 
 ### Deploy using Docker (Optional)
 
-\`\`\`bash
+```bash
 docker build -t pdf-processor .
 docker run -p 8080:80 pdf-processor
-\`\`\`
+```
 
 Docker deployment may be beneficial in these scenarios:
 
@@ -88,34 +88,34 @@ Docker deployment may be beneficial in these scenarios:
 - For more control over the runtime environment  
 - When scaling to handle high document processing volumes  
 
-## 📝 Usage & Data Flow
+## Usage & Data Flow
 
 ### 1. Direct PDF Processing
 
 Send a PDF file directly to the endpoint:
 
-\`\`\`bash
+```bash
 curl -X POST https://your-function-app.azurewebsites.net/api/split_pdf \\
   -H "Content-Type: application/pdf" \\
   --data-binary @document.pdf
-\`\`\`
+```
 
 **Response:**
 
-\`\`\`json
+```json
 {
   "pages": [
     {"page_number": 1, "content": "Page 1 text content..."},
     {"page_number": 2, "content": "Page 2 text content..."}
   ]
 }
-\`\`\`
+```
 
 ### 2. Azure AI Search Skillset Integration
 
 #### Input Format
 
-\`\`\`json
+```json
 {
   "values": [
     {
@@ -126,7 +126,7 @@ curl -X POST https://your-function-app.azurewebsites.net/api/split_pdf \\
     }
   ]
 }
-\`\`\`
+```
 
 The `[PDF CONTENT]` can be:
 
@@ -158,7 +158,7 @@ The `[PDF CONTENT]` can be:
 
 #### Output Format
 
-\`\`\`json
+```json
 {
   "values": [
     {
@@ -172,13 +172,13 @@ The `[PDF CONTENT]` can be:
     }
   ]
 }
-\`\`\`
+```
 
 #### Integration Example
 
 **Web API Skill in skillset:**
 
-\`\`\`json
+```json
 {
   "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
   "description": "Custom PDF page splitting using Azure Function",
@@ -198,22 +198,22 @@ The `[PDF CONTENT]` can be:
     }
   ]
 }
-\`\`\`
+```
 
 **Embedding Skill:**
 
-\`\`\`json
+```json
 {
   "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
   "context": "/document/pages/*",
   "inputs": [{"name": "text", "source": "/document/pages/*"}],
   "outputs": [{"name": "embedding", "targetName": "vector"}]
 }
-\`\`\`
+```
 
 **Index Projection:**
 
-\`\`\`json
+```json
 {
   "selectors": [{
     "targetIndexName": "your-index",
@@ -226,9 +226,9 @@ The `[PDF CONTENT]` can be:
     ]
   }]
 }
-\`\`\`
+```
 
-## 🔌 Integration with Azure AI Search
+## Integration with Azure AI Search
 
 Use this function as a custom skill in Azure AI Search to:
 
@@ -237,7 +237,7 @@ Use this function as a custom skill in Azure AI Search to:
 - Return page-specific results for better source attribution  
 - Create coherent page-based content chunks  
 
-## 📖 Error Handling
+## Error Handling
 
 The function provides clear error messages for:
 
@@ -251,17 +251,3 @@ The function provides clear error messages for:
 - 300 page processing limit  
 - 100,000 character max per page  
 - Scale your Function App Plan for high document throughput  
-
-## Security
-
-- Enable authentication for production environments  
-- Add API key check or other security measure  
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
-EOF
